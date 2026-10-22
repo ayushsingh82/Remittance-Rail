@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remittance Rail — Pitch Deck</title>
+<style>
+  :root {
+    --bg: #0e1a2b;
+    --panel: #15253c;
+    --line: #2b4160;
+    --text: #f2f4f7;
+    --mute: #93a1b5;
+    --yel: #ffcc00;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #050a12; color: var(--text); overflow: hidden; font-family: var(--sans); }
+
+  #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center center; }
+  .slide { position: absolute; inset: 0; background: var(--bg); padding: 0 0 54px; display: none; flex-direction: column; overflow: hidden; }
+  .slide.active { display: flex; }
+
+  /* signage header band */
+  .band { background: var(--yel); color: #0e1a2b; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 72px; height: 54px; font: 700 15px var(--mono); letter-spacing: .16em; text-transform: uppercase; flex: none; }
+  .band .mk { display: flex; align-items: center; gap: 12px; }
+  .band .mk svg { width: 28px; height: 28px; }
+  .body { padding: 40px 72px 0; display: flex; flex-direction: column; flex: 1; }
+
+  h1 { font-size: 112px; line-height: .92; letter-spacing: -.04em; font-weight: 800; }
+  h2 { font-size: 50px; line-height: 1.07; letter-spacing: -.025em; font-weight: 800; max-width: 1060px; margin-bottom: 28px; }
+  h3 { font-size: 25px; font-weight: 700; margin-bottom: 8px; }
+  p, li { font-size: 21px; line-height: 1.42; color: #d3dae5; }
+  .lab { font: 700 13px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--yel); display: block; margin-bottom: 10px; }
+  .y { color: var(--yel); } .mute { color: var(--mute); }
+
+  .cols { display: grid; flex: 1; align-content: start; }
+  .cols > div { padding: 0 28px; border-left: 3px solid var(--yel); }
+  .cols > div:first-child { border-left: 0; padding-left: 0; }
+  .cols > div:last-child { padding-right: 0; }
+  .c2 { grid-template-columns: repeat(2, 1fr); } .c3 { grid-template-columns: repeat(3, 1fr); } .c4 { grid-template-columns: repeat(4, 1fr); }
+
+  .say { font-size: 30px; line-height: 1.25; font-weight: 700; margin-top: auto; max-width: 1000px; padding-top: 18px; border-top: 3px solid var(--yel); color: var(--text); }
+
+  /* to-verify note */
+  .tv { border: 2px dashed var(--yel); padding: 12px 18px; font: 15px/1.45 var(--mono); color: var(--yel); margin-top: 18px; }
+
+  /* route line */
+  .route { position: relative; margin: 24px 0 0; }
+  .route svg { width: 100%; display: block; }
+  .stops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 4px; }
+  .stops > div { padding-right: 24px; }
+  .stops h3 { font-size: 26px; }
+  .stops p { font-size: 19px; }
+  .stops .t { font: 700 13px var(--mono); letter-spacing: .14em; color: var(--yel); display: block; margin-bottom: 6px; }
+
+  .guard { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 26px; border-top: 3px solid var(--yel); }
+  .guard > div { padding: 18px 0 0; }
+  .guard > div + div { border-left: 3px solid var(--yel); padding-left: 28px; }
+  .guard p { font-size: 19px; }
+
+  /* timetable */
+  table { width: 100%; border-collapse: collapse; }
+  th { font: 700 13px var(--mono); letter-spacing: .16em; text-transform: uppercase; text-align: left; color: var(--yel); padding: 0 16px 10px 0; border-bottom: 3px solid var(--yel); }
+  td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); font-size: 20px; line-height: 1.35; color: #d3dae5; vertical-align: top; }
+  td:first-child { color: var(--text); font-weight: 700; width: 30%; }
+
+  .big { font-size: 96px; font-weight: 800; letter-spacing: -.04em; line-height: .9; color: var(--yel); }
+  .tick { display: inline-block; border: 2px solid var(--text); padding: 8px 16px; font: 700 17px var(--mono); letter-spacing: .06em; margin: 0 10px 10px 0; }
+  .tick.on { background: var(--yel); color: #0e1a2b; border-color: var(--yel); }
+
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 20px; display: flex; justify-content: space-between; font: 12px var(--mono); letter-spacing: .12em; color: var(--mute); text-transform: uppercase; }
+  #bar { position: fixed; left: 0; top: 0; height: 4px; background: var(--yel); width: 0; z-index: 5; }
+  #ctl { position: fixed; bottom: 10px; right: 14px; display: flex; gap: 8px; align-items: center; color: #6f82a0; font: 13px var(--mono); z-index: 5; opacity: 0; transition: opacity .2s; }
+  #ctl:hover { opacity: 1; }
+  #ctl button { background: none; color: var(--text); border: 2px solid #6f82a0; width: 34px; height: 30px; cursor: pointer; font: 16px var(--mono); }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { overflow: visible; height: auto; background: none; }
+    #stage { position: static; transform: none !important; width: 1280px; height: auto; }
+    .slide { display: flex !important; position: relative; width: 1280px; height: 720px; page-break-after: always; }
+    #bar, #ctl { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage">
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="mark" viewBox="0 0 40 40">
+    <rect width="40" height="40" fill="#0e1a2b"/>
+    <rect x="5" y="14" width="30" height="3" fill="#ffcc00"/><rect x="5" y="23" width="30" height="3" fill="#ffcc00"/>
+    <rect x="10" y="10" width="3" height="20" fill="#ffcc00"/><rect x="18" y="10" width="3" height="20" fill="#ffcc00"/><rect x="26" y="10" width="3" height="20" fill="#ffcc00"/>
+  </symbol>
+</defs></svg>
+
+<!-- 1 TITLE -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Web3 for Social Good 2026 / Idea Track</span></div>
+  <div class="body" style="justify-content:center">
+    <h1>Remittance<br>Rail<span class="y">.</span></h1>
+    <p style="font-size:32px;color:var(--text);margin-top:26px;max-width:760px;line-height:1.28">Send money home in minutes, and see exactly where every cent went.</p>
+    <div class="route" style="margin-top:50px">
+      <svg viewBox="0 0 1136 60"><line x1="20" y1="30" x2="1116" y2="30" stroke="#ffcc00" stroke-width="8"/>
+        <g fill="#0e1a2b" stroke="#ffcc00" stroke-width="6"><circle cx="20" cy="30" r="14"/><circle cx="568" cy="30" r="14"/><circle cx="1116" cy="30" r="14"/></g></svg>
+      <div style="display:flex;justify-content:space-between;font:700 14px var(--mono);letter-spacing:.14em;margin-top:6px"><span>SINGAPORE</span><span class="y">STABLECOIN RAIL</span><span>PHILIPPINES</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Pitch deck</span><span>01 / 11</span></div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>The social challenge</span></div>
+  <div class="body">
+    <h2>Migrant workers send home part of every paycheck, and lose a slice on the way.</h2>
+    <div class="cols c4" style="flex:none">
+      <div><span class="lab">01</span><h3>Hidden costs</h3><p style="font-size:18px">A visible fee plus an exchange-rate margin nobody explains.</p></div>
+      <div><span class="lab">02</span><h3>Slow delivery</h3><p style="font-size:18px">Hours or days, and cash-out often means a trip to a pickup point.</p></div>
+      <div><span class="lab">03</span><h3>No visibility</h3><p style="font-size:18px">If money is delayed or lost, the sender has little to go on.</p></div>
+      <div><span class="lab">04</span><h3>Hits the poorest</h3><p style="font-size:18px">A fixed fee takes a bigger share of small, frequent transfers.</p></div>
+    </div>
+    <div class="tv">TO VERIFY BEFORE PRESENTING: typical total cost to send SGD 200-500 on Singapore to Philippines, with source (World Bank Remittance Prices Worldwide or a central bank).</div>
+    <p class="say">Every dollar lost to fees is a dollar not spent on a child's school or a parent's medicine.</p>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>02 / 11</span></div>
+</section>
+
+<!-- 3 AUDIENCE -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Target audience</span></div>
+  <div class="body">
+    <h2>Three groups on one rail.</h2>
+    <div class="cols c3">
+      <div><span class="lab">Senders</span><h3>Migrant workers in Singapore</h3><p>Domestic, construction, service and shipyard workers who send money home regularly.</p></div>
+      <div><span class="lab">Receivers</span><h3>Families back home</h3><p>Households that rely on it for food, rent, school fees and medicine, including those far from banks.</p></div>
+      <div><span class="lab">Last mile</span><h3>Cash-out partners</h3><p>Licensed remittance outlets, e-wallet providers and community agents who earn a fair fee.</p></div>
+    </div>
+    <p class="say">The worker only sees a normal app. The blockchain is the plumbing.</p>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>03 / 11</span></div>
+</section>
+
+<!-- 4 SOLUTION -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>The solution</span></div>
+  <div class="body">
+    <h2>Send, move, receive, with the cost shown up front.</h2>
+    <div class="route">
+      <svg viewBox="0 0 1136 50"><line x1="20" y1="25" x2="1116" y2="25" stroke="#ffcc00" stroke-width="8"/>
+        <g fill="#0e1a2b" stroke="#ffcc00" stroke-width="6"><circle cx="20" cy="25" r="14"/><circle cx="568" cy="25" r="14"/><circle cx="1116" cy="25" r="14"/></g></svg>
+    </div>
+    <div class="stops">
+      <div><span class="t">STOP 1 / SEND</span><h3>Pay in SGD</h3><p>Through a licensed on-ramp. The app shows the exact amount the family receives before you confirm.</p></div>
+      <div><span class="t">STOP 2 / MOVE</span><h3>Settle on-chain</h3><p>A regulated stablecoin on a low-fee public chain. Minutes, any day of the week.</p></div>
+      <div><span class="t">STOP 3 / RECEIVE</span><h3>Collect locally</h3><p>Local currency in a mobile wallet, or cash at a partner agent with a one-time code or QR.</p></div>
+    </div>
+    <div class="guard">
+      <div><span class="lab">Protect</span><p>A smart contract holds the transfer until it is collected. If not collected in time, it returns to the sender automatically.</p></div>
+      <div><span class="lab">See</span><p>A receipt shows amount sent, fee, rate used and amount received, on a public ledger.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>04 / 11</span></div>
+</section>
+
+<!-- 5 WHY WEB3 -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Why Web3</span></div>
+  <div class="body">
+    <h2>Web3 where it is strongest: settlement, escrow, a shared record.</h2>
+    <table>
+      <tr><th>Pain today</th><th>What Web3 adds</th></tr>
+      <tr><td>Intermediaries raise cost</td><td>Direct settlement on a low-fee chain removes middle steps</td></tr>
+      <tr><td>Business-hours settlement</td><td>Final settlement in minutes, 24/7</td></tr>
+      <tr><td>Hidden fees and margins</td><td>Fee and rate in a public receipt anyone can check</td></tr>
+      <tr><td>Money stuck in transit</td><td>Programmable escrow with automatic refund</td></tr>
+      <tr><td>Closed agent networks</td><td>Any licensed agent joins open rails and competes on price</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>05 / 11</span></div>
+</section>
+
+<!-- 6 USE CASE -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Use case</span></div>
+  <div class="body">
+    <h2>A domestic worker sends money to her mother.</h2>
+    <div class="cols c3">
+      <div><span class="lab">Monday / Singapore</span><p>She opens the app, enters the amount, and sees exactly what her mother will receive. She confirms.</p></div>
+      <div><span class="lab">Minutes later</span><p>The transfer settles on-chain. A code arrives on her mother's phone, and the funds sit in escrow.</p></div>
+      <div><span class="lab">Same day / Philippines</span><p>Her mother collects cash at a nearby agent, or in her mobile wallet. Both sides hold the same receipt.</p></div>
+    </div>
+    <div class="tv">TO ADD: a real or clearly labelled composite story, and a verified money-saved-per-year figure.</div>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>06 / 11</span></div>
+</section>
+
+<!-- 7 IMPACT -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Social impact</span></div>
+  <div class="body">
+    <h2>More money reaches families, and workers see every cent.</h2>
+    <div class="cols c2" style="flex:none">
+      <div><p><strong>More arrives.</strong> Lower costs leave a larger share of each transfer.</p><p style="margin-top:10px"><strong>Faster help.</strong> Medical or disaster needs met the same day.</p><p style="margin-top:10px"><strong>Dignity.</strong> A clear record of what happened.</p></div>
+      <div><p><strong>Inclusion.</strong> Receivers without a bank account can hold value in wallets.</p><p style="margin-top:10px"><strong>Fairer last mile.</strong> Local agents earn from a transparent fee.</p><p style="margin-top:10px"><strong>Open competition.</strong> Agents compete on the same rails.</p></div>
+    </div>
+    <span class="lab" style="margin-top:34px">How we measure it</span>
+    <div><span class="tick on">ALL-IN COST VS AVERAGE</span><span class="tick">SEND-TO-CASH-OUT TIME</span><span class="tick">COLLECTION RATE</span><span class="tick">SAVED PER USER / YEAR</span><span class="tick">AGENTS ONBOARDED</span></div>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>07 / 11</span></div>
+</section>
+
+<!-- 8 BUSINESS MODEL -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Business model</span></div>
+  <div class="body">
+    <h2>A small, transparent fee, set below the corridor average.</h2>
+    <table>
+      <tr><th>Stream</th><th>Who pays</th><th>How</th></tr>
+      <tr><td>Per-transfer fee</td><td>Sender</td><td>Flat or small percentage, shown before confirming</td></tr>
+      <tr><td>Agent revenue share</td><td>Cash-out partners</td><td>Share of last-mile fees on volume we bring</td></tr>
+      <tr><td>On-ramp partner share</td><td>Licensed on-ramp</td><td>Share of conversion revenue from referred volume</td></tr>
+    </table>
+    <div class="tv">TO VERIFY: set the target fee after checking current corridor prices. The pilot tests whether the all-in cost, including on-ramp and off-ramp, still beats the average.</div>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>08 / 11</span></div>
+</section>
+
+<!-- 9 FEASIBILITY -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Feasibility</span></div>
+  <div class="body">
+    <h2>A phased pilot. One line first, then the network.</h2>
+    <div class="cols c3" style="flex:none">
+      <div><span class="lab">Phase 0</span><h3>Research and partners</h3><p style="font-size:19px">Talk to a licensed Singapore money-transfer entity, a stablecoin on/off-ramp, and a Philippines cash-out partner.</p></div>
+      <div><span class="lab">Phase 1</span><h3>Closed pilot</h3><p style="font-size:19px">Singapore to Philippines, a small group of workers, one cash-out partner. Prove cost, speed, collection rate.</p></div>
+      <div><span class="lab">Phase 2</span><h3>Scale on the same rails</h3><p style="font-size:19px">Add agents and corridors.</p></div>
+    </div>
+    <div class="route" style="margin-top:34px">
+      <svg viewBox="0 0 1136 190">
+        <g stroke="#ffcc00" stroke-width="7" fill="none" stroke-linecap="round">
+          <path d="M40 95 L360 95"/>
+          <path d="M360 95 L520 95 L620 30 L800 30"/>
+          <path d="M360 95 L800 95"/>
+          <path d="M360 95 L520 95 L620 160 L800 160"/>
+        </g>
+        <g fill="#0e1a2b" stroke="#ffcc00" stroke-width="6"><circle cx="40" cy="95" r="14"/><circle cx="800" cy="30" r="12"/><circle cx="800" cy="95" r="12"/><circle cx="800" cy="160" r="12"/></g>
+        <circle cx="800" cy="95" r="12" fill="#ffcc00"/>
+        <g font-family="ui-monospace,Menlo,monospace" font-weight="700" font-size="17" fill="#f2f4f7" letter-spacing="2">
+          <text x="40" y="132" text-anchor="start">SINGAPORE</text>
+          <text x="830" y="36">INDONESIA</text><text x="830" y="101" fill="#ffcc00">PHILIPPINES (LEAD)</text><text x="830" y="166">INDIA / BANGLADESH</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>09 / 11</span></div>
+</section>
+
+<!-- 10 RISKS -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Risks and mitigations</span></div>
+  <div class="body">
+    <h2>We name the hard parts.</h2>
+    <table>
+      <tr><th>Risk</th><th>Mitigation</th></tr>
+      <tr><td>Licensing for cross-border transfers</td><td>Operate through a licensed partner first; seek our own licence later</td></tr>
+      <tr><td>Stablecoin depeg</td><td>Regulated, fully reserved coins; convert promptly; cap exposure</td></tr>
+      <tr><td>On/off-ramp costs eat savings</td><td>Negotiate rates, use very low-fee chains, publish the all-in cost</td></tr>
+      <tr><td>KYC and anti-money-laundering</td><td>Full identity checks and monitoring through partners</td></tr>
+      <tr><td>Trust among first-time users</td><td>Familiar app, agent-assisted onboarding, employer and NGO partnerships</td></tr>
+    </table>
+    <div class="tv" style="padding:10px 18px">TO VERIFY: confirm the Singapore licensing statement against MAS guidance.</div>
+  </div>
+  <div class="foot"><span>Remittance Rail</span><span>10 / 11</span></div>
+</section>
+
+<!-- 11 WHY NOW + ASK -->
+<section class="slide">
+  <div class="band"><span class="mk"><svg><use href="#mark"/></svg>Remittance Rail</span><span>Why now / the ask</span></div>
+  <div class="body">
+    <h2>The rails finally exist. Now we need partners.</h2>
+    <div class="cols c2">
+      <div><span class="lab">Why now</span><p>Stablecoins and low-fee chains have matured.</p><p style="margin-top:10px">Mobile wallets are widespread in the Philippines.</p><p style="margin-top:10px">Singapore is a hub for migrant workers and regulated digital payments.</p></div>
+      <div><span class="lab">What we need</span><p>A licensed Singapore partner for the pilot.</p><p style="margin-top:10px">A Philippines cash-out partner.</p><p style="margin-top:10px">Mentors in payments compliance.</p></div>
+    </div>
+    <p class="say">More of her paycheck reaches her family, and she can see every cent.</p>
+  </div>
+  <div class="foot"><span>[Team names and contact]</span><span>11 / 11</span></div>
+</section>
+
+</div>
+
+<div id="ctl"><button id="prev" aria-label="Previous">&lt;</button><span id="pos">1 / 11</span><button id="next" aria-label="Next">&gt;</button></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const stage = document.getElementById("stage");
+  let i = 0;
+  function fit() {
+    const s = Math.min(innerWidth / 1280, innerHeight / 720);
+    stage.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => el.classList.toggle("active", k === i));
+    document.getElementById("bar").style.width = ((i + 1) / slides.length * 100) + "%";
+    document.getElementById("pos").textContent = (i + 1) + " / " + slides.length;
+    history.replaceState(null, "", "#" + (i + 1));
+  }
+  document.getElementById("prev").onclick = () => show(i - 1);
+  document.getElementById("next").onclick = () => show(i + 1);
+  addEventListener("keydown", e => {
+    if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    if (e.key === "Home") show(0);
+    if (e.key === "End") show(slides.length - 1);
+  });
+  addEventListener("click", e => { if (!e.target.closest("#ctl")) show(e.clientX > innerWidth / 2 ? i + 1 : i - 1); });
+  addEventListener("resize", fit);
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>
