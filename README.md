@@ -90,4 +90,9 @@ This is an idea-stage submission. There is no working prototype yet. Figures tha
 
 | Path | Contents |
 |---|---|
-| `pitch/index.html` | 11-slide pitch deck, a single self-contained HTML file |
+| `pitch/index.html` | Pitch deck, a single self-contained HTML file |
+| `docs/PLAN.md` | Phases, milestones, metrics, team and open questions |
+| `docs/HOW_TO_BUILD.md` | Scope, components, build order and testing |
+| `docs/TECH_STACK.md` | Technology we plan to use, and why |
+| `docs/GO_TO_MARKET.md` | Who we reach first, channels, pricing approach, launch plan |
+| `docs/RISKS_AND_COMPLIANCE.md` | Risks, compliance duties and mitigations |
